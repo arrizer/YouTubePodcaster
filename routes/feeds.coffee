@@ -28,7 +28,7 @@ module.exports = (app) ->
             res.status(500).send error
           else
             count = 0
-            for video in videos.items when video.contentDetails.upload?
+            for video in videos.items when video.contentDetails? and video.contentDetails.upload?
               feed.item
                 title: video.snippet.title
                 description: video.snippet.description
