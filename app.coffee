@@ -5,7 +5,6 @@ fs       = require 'fs'
 
 # Configure app
 app = express()
-app.set "port", 9898
 app.set "views", __dirname + "/views"
 app.set 'view engine', 'html'
 app.enable 'view cache'
@@ -15,6 +14,7 @@ app.disable 'x-powered-by'
 # Load config file
 app.config = require './config.json'
 app.config.path = __dirname
+app.set "port", app.config.port
 
 # Middleware
 app.use express.favicon()

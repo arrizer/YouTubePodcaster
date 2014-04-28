@@ -2,5 +2,6 @@
   "memcached_host":"localhost",
   "memcached_port":11211,
   "google_api_key":"<ENTER YOUR KEY HERE>",
-  "domain":"http://example.com/"
+  "domain":"http://example.com/",
+  "port":9898
 }
