@@ -1,6 +1,0 @@
-{
-  "memcached_host":"localhost",
-  "memcached_port":11211,
-  "google_api_key":"AIzaSyDi44xLNT6CXXuOmm54PtVxDH3_kvSbUmg",
-  "domain":"http://localhost:9898/"
-}
