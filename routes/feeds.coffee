@@ -37,6 +37,7 @@ module.exports = (app) ->
                 date: video.snippet.publishedAt
                 enclosure:
                   url: app.config.domain + 'video/' + video.contentDetails.upload.videoId
+                  type: 'mp4'
             res.type 'application/rss+xml; charset=utf-8'
             res.send feed.xml('  ')
               
