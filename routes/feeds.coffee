@@ -1,6 +1,6 @@
 Cache = require '../classes/Cache'
 YouTube = require '../classes/YouTube'
-RSS = require 'rss'
+Podcast = require 'podcast'
 Async = require 'async'
 
 module.exports = (app) ->
@@ -15,14 +15,16 @@ module.exports = (app) ->
         res.status(404).send 'Channel not found'
       else
         channel = channel.items[0].snippet
-        feed = new RSS
+        feed = new Podcast
           title: channel.title
           description: channel.description
           image_url: channel.thumbnails.high.url
-          feed_url: app.config.domain
+          feed_url: app.config.domain + req.url
           site_url: app.config.domain
           ttl: 10
           generator: 'YouTube Podcaster'
+          itunesSummary: channel.description
+          itunesImage: channel.thumbnails.high.url
         youtube.channelVideos req.params.channelid, (error, videos) =>
           if error?
             res.status(500).send error
@@ -37,7 +39,7 @@ module.exports = (app) ->
                 date: video.snippet.publishedAt
                 enclosure:
                   url: app.config.domain + 'video/' + video.contentDetails.upload.videoId
-                  type: 'mp4'
+                  mime: 'video/mp4'
             res.type 'application/rss+xml; charset=utf-8'
             res.send feed.xml('  ')
               
