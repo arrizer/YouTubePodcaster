@@ -30,15 +30,15 @@ module.exports = (app) ->
             res.status(500).send error
           else
             count = 0
-            for video in videos.items when video.contentDetails? and video.contentDetails.upload?
+            for video in videos.items
               feed.item
                 title: video.snippet.title
                 description: video.snippet.description
-                url: 'https://youtube.com/watch?v='+video.contentDetails.upload.videoId
+                url: 'https://youtube.com/watch?v='+video.snippet.resourceId.videoId
                 guid: video.id
                 date: video.snippet.publishedAt
                 enclosure:
-                  url: app.config.domain + 'video/' + video.contentDetails.upload.videoId
+                  url: app.config.domain + 'video/' + video.snippet.resourceId.videoId
                   mime: 'video/mp4'
             res.type 'application/rss+xml; charset=utf-8'
             res.send feed.xml('  ')

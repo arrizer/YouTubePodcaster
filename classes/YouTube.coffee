@@ -63,10 +63,25 @@ module.exports = class YouTube
   
   channelVideos: (channelID, next) ->
     parameters = 
-      part: 'id, snippet, contentDetails'
-      maxResults: 50
-      channelId: channelID
-    @apiRequestCached 'activities', parameters, no, 60*10, next
+      part: 'contentDetails'
+      id: channelID
+    @apiRequestCached 'channels', parameters, no, 60*10, (error, result) =>
+      return next(error) if error?
+      return next(new Error("Channel not found")) unless result.items.length > 0
+      channel = result.items[0]
+      parameters = 
+        part: 'id,snippet,status,contentDetails'
+        id: channel.contentDetails.relatedPlaylists.uploads
+      @apiRequestCached 'playlists', parameters, no, 60*60, (error, result) =>
+        return next(error) if error?
+        return next(new Error("Uploads playlist of channel not found")) unless result.items.length > 0        
+        playlist = result.items[0]
+        console.log result.pageInfo
+        parameters = 
+          part: 'id,snippet,contentDetails,status'
+          playlistId: playlist.id
+          maxResults: 50
+        @apiRequestCached 'playlistItems', parameters, no, 60*60, next
     
   videoFileURL: (videoID, next) ->
     cmd = 'youtube-dl -g "http://youtube.com/watch?v='+videoID+'"'
