@@ -1,0 +1,6 @@
+{
+  "name" : "ytpodcaster",
+  "script" : "app.coffee",
+  "max_memory_restart" : "100M",
+  "instances" : 1
+}

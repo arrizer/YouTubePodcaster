@@ -58,7 +58,7 @@ module.exports = class YouTube
   channel: (id, next) ->
     parameters = 
       part: 'id,snippet,contentDetails,statistics,topicDetails'
-      id: id 
+      id: id
     @apiRequestCached 'channels', parameters, no, 60*60, next
   
   channelVideos: (channelID, next) ->
