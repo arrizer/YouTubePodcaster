@@ -6,11 +6,8 @@
   "private": true,
   "main": "app.coffee",
   "dependencies": {
-    "async": "^0.2.10",
-    "cli-color": "*",
-    "express": "3.3.5",
+    "async": "*",
     "memcached": "*",
-    "podcast": "*",
-    "sprintf": "*"
+    "podcast": "*"
   }
 }

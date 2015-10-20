@@ -1,10 +1,10 @@
 HTTP      = require 'https'
-Log       = require './Log'
+Log       = require('appkit').Log
 URL       = require 'url'
 Cache     = require './Cache'
 ChildProcess = require 'child_process'
 
-log = Log.StdErr()
+log = Log.Module('YouTube')
 
 module.exports = class YouTube
   BASE = 'https://www.googleapis.com/youtube/v3/'
