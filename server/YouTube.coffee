@@ -84,7 +84,7 @@ module.exports = class YouTube
         @apiRequestCached 'playlistItems', parameters, no, 60*60, next
     
   videoFileURL: (videoID, next) ->
-    cmd = 'youtube-dl -g "http://youtube.com/watch?v='+videoID+'"'
+    cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
     log.debug '$ %s', cmd
     ChildProcess.exec cmd, (error, stdout, stderr) =>
       if stderr? and stderr isnt ''
