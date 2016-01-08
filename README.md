@@ -12,9 +12,20 @@ Then run the server with `coffee app.coffee` or your favourite nodejs deployment
 
 ## Usage
 
-You need the YouTube channel ID to subscribe to a video podcast. The last part of the youtube channel homepage URL is the channel ID, for example`https://www.youtube.com/channel/UC3LqW4ijMoENQ2Wv17ZrFJA` for the "PBS Idea Channel".
+### Subscribe to Channels
 
-The video podcast URL is then:
+You need the YouTube channel ID to subscribe. The last part of the youtube channel homepage URL is the channel ID, for example `https://www.youtube.com/channel/UC3LqW4ijMoENQ2Wv17ZrFJA` for the "PBS Idea Channel".
+
+The channel video podcast URL is then:
 `http://yourdomain.com/channel/<channelid>`
 
-Each enclosure in the feed links to your server, e.g. `http://yourdomain.com/channel/<videoid>`. This URL resolves a deep-link to the video file within the YouTube CDN and redirect the Podcatcher there.
+### Subscribe to Playlists
+
+You need the YouTube playlist ID to subscribe. The parameter is named `list` in the URL to the playlists contents, for example `https://www.youtube.com/playlist?list=PL8dPuuaLjXtPAJr1ysd5yGIyiSFuh0mIL` for the "Crash Course: Astronomy" playlist of the "Crash Course" channel.
+
+The playlist video podcast URL is then:
+`http://yourdomain.com/channel/<playlistid>`
+
+## Video Links
+
+Each enclosure in the feed links to your server, e.g. `http://yourdomain.com/channel/<videoid>`. This URL resolves a deep-link to the video file within the YouTube CDN and redirects the Podcatcher there. Your Podcatcher must support HTTP redirects when playing a video for this to work!
