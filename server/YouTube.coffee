@@ -91,4 +91,5 @@ module.exports = class YouTube
         log.error stderr
         next(stderr)
       else
+        log.debug stdout
         next(null, stdout)
