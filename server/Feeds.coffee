@@ -46,6 +46,49 @@ module.exports = class Feeds extends AppKit.ServerModule
                     mime: 'video/mp4'
               res.type 'application/rss+xml; charset=utf-8'
               res.send feed.xml('  ')
+    
+    @router.get '/playlist/:playlistid', (req,res) =>
+      @youtube.playlist req.params.playlistid, (error, playlist) =>
+        if error?
+          res.status(500).send error.toString()
+        else if playlist.items.length == 0
+          res.status(404).send 'Playlist not found'
+        else
+          playlist = playlist.items[0].snippet
+          @youtube.channel playlist.channelId, (error, channel) =>
+            if error?
+              res.status(500).send error.toString()
+            else if channel.items.length == 0
+              res.status(404).send 'Channel not found'
+            else
+              channel = channel.items[0].snippet
+              feed = new Podcast
+                title: channel.title + ': ' + playlist.title
+                description: playlist.description
+                image_url: playlist.thumbnails.high.url
+                feed_url: @server.config.domain + req.url
+                site_url: @server.config.domain
+                ttl: 10
+                generator: 'YouTube Podcaster'
+                itunesSummary: playlist.description
+                itunesImage: playlist.thumbnails.high.url
+              @youtube.playlistVideos req.params.playlistid, (error, videos) =>
+                if error?
+                  res.status(500).send error
+                else
+                  count = 0
+                  for video in videos.items
+                    feed.item
+                      title: video.snippet.title
+                      description: video.snippet.description
+                      url: 'https://@youtube.com/watch?v='+video.snippet.resourceId.videoId
+                      guid: video.id
+                      date: video.snippet.publishedAt
+                      enclosure:
+                        url: @server.config.domain + 'video/' + video.snippet.resourceId.videoId + '.mp4'
+                        mime: 'video/mp4'
+                  res.type 'application/rss+xml; charset=utf-8'
+                  res.send feed.xml('  ')
                 
     @router.get '/video/:videoid.mp4', (req,res) =>
       @youtube.videoFileURL req.params.videoid, (error, url) =>

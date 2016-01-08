@@ -69,19 +69,28 @@ module.exports = class YouTube
       return next(error) if error?
       return next(new Error("Channel not found")) unless result.items.length > 0
       channel = result.items[0]
+      @playlistVideos channel.contentDetails.relatedPlaylists.uploads, next
+      
+  playlist: (playlistID, next) ->
+    parameters = 
+      part: 'snippet'
+      id: playlistID
+    @apiRequestCached 'playlists', parameters, no, 60*60, next
+        
+  playlistVideos: (playlistID, next) ->
+    parameters = 
+      part: 'id,snippet,status,contentDetails'
+      id: playlistID
+    @apiRequestCached 'playlists', parameters, no, 60*60, (error, result) =>
+      return next(error) if error?
+      return next(new Error("Playlist #{playlistID} of channel not found")) unless result.items.length > 0        
+      playlist = result.items[0]
+      #console.log result.pageInfo
       parameters = 
-        part: 'id,snippet,status,contentDetails'
-        id: channel.contentDetails.relatedPlaylists.uploads
-      @apiRequestCached 'playlists', parameters, no, 60*60, (error, result) =>
-        return next(error) if error?
-        return next(new Error("Uploads playlist of channel not found")) unless result.items.length > 0        
-        playlist = result.items[0]
-        console.log result.pageInfo
-        parameters = 
-          part: 'id,snippet,contentDetails,status'
-          playlistId: playlist.id
-          maxResults: 50
-        @apiRequestCached 'playlistItems', parameters, no, 60*60, next
+        part: 'id,snippet,contentDetails,status'
+        playlistId: playlist.id
+        maxResults: 50
+      @apiRequestCached 'playlistItems', parameters, no, 60*60, next
     
   videoFileURL: (videoID, next) ->
     cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
