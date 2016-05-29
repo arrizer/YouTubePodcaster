@@ -4,7 +4,7 @@ YouTube = require './YouTube'
 Podcast = require 'podcast'
 Async   = require 'async'
 
-module.exports = class Feeds extends AppKit.ServerModule
+module.exports = class Feeds extends AppKit.MountedServerModule
   constructor: ->
     super
     @youtube = new YouTube(@server.config.google_api_key)
