@@ -100,5 +100,6 @@ module.exports = class YouTube
         log.error stderr
         next(stderr)
       else
+        stdout = stdout.replace "\n", ""
         log.debug 'Resolved URL = %s', stdout
         next(null, stdout)

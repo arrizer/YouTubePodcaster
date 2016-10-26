@@ -12,10 +12,14 @@ module.exports = class Feeds extends AppKit.MountedServerModule
   
   mount: ->
     @router.get '/channel/:channelid', (req,res) =>
-      @youtube.channel req.params.channelid, (error, channel) =>
+      channelID = req.params.channelid
+      @log.info "Requesting channel with id '#{channelID}'..."
+      @youtube.channel channelID, (error, channel) =>
         if error?
+          @log.error "Channel #{channelID} could not be fetched: #{error}"
           res.status(500).send error.toString()
         else if channel.items.length == 0
+          @log.error "Channel #{channelID} not found"
           res.status(404).send 'Channel not found'
         else
           channel = channel.items[0].snippet
@@ -29,11 +33,14 @@ module.exports = class Feeds extends AppKit.MountedServerModule
             generator: 'YouTube Podcaster'
             itunesSummary: channel.description
             itunesImage: channel.thumbnails.high.url
-          @youtube.channelVideos req.params.channelid, (error, videos) =>
+          @log.info "Fetching videos in channel #{channelID}"
+          @youtube.channelVideos channelID, (error, videos) =>
             if error?
+              @log.error "Failed to fetch channel videos for channel #{channelID}: #{error}"
               res.status(500).send error
             else
               count = 0
+              @log.info "Responding with #{videos.items.length} videos in channel #{channelID}"
               for video in videos.items
                 feed.item
                   title: video.snippet.title
@@ -48,17 +55,24 @@ module.exports = class Feeds extends AppKit.MountedServerModule
               res.send feed.xml('  ')
     
     @router.get '/playlist/:playlistid', (req,res) =>
-      @youtube.playlist req.params.playlistid, (error, playlist) =>
+      playlistID = req.params.playlistid
+      @log.info "Requesting playlist with id '#{playlistID}'..."
+      @youtube.playlist playlistID, (error, playlist) =>
         if error?
+          @log.info "Failed to fetch playlist with id '#{playlistID}': #{error}"
           res.status(500).send error.toString()
         else if playlist.items.length == 0
+          @log.info "Playlist with id '#{playlistID}' not found"
           res.status(404).send 'Playlist not found'
         else
           playlist = playlist.items[0].snippet
+          @log.info "Requesting channel for playlist with channel id '#{playlist.channelId}'..."
           @youtube.channel playlist.channelId, (error, channel) =>
             if error?
+              @log.error "Channel #{channelID} could not be fetched: #{error}"
               res.status(500).send error.toString()
             else if channel.items.length == 0
+              @log.error "Channel #{channelID} not found"
               res.status(404).send 'Channel not found'
             else
               channel = channel.items[0].snippet
@@ -72,11 +86,13 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                 generator: 'YouTube Podcaster'
                 itunesSummary: playlist.description
                 itunesImage: playlist.thumbnails.high.url
-              @youtube.playlistVideos req.params.playlistid, (error, videos) =>
+              @log.info "Requesting videos in playlist with id '#{playlistID}'..."
+              @youtube.playlistVideos playlistID, (error, videos) =>
                 if error?
                   res.status(500).send error
                 else
                   count = 0
+                  @log.info "Responding with #{videos.items.length} videos in playlist with id '#{playlistID}'..."
                   for video in videos.items
                     feed.item
                       title: video.snippet.title
@@ -91,5 +107,12 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                   res.send feed.xml('  ')
                 
     @router.get '/video/:videoid.mp4', (req,res) =>
-      @youtube.videoFileURL req.params.videoid, (error, url) =>
-        res.redirect url
+      videoID = req.params.videoid
+      @log.info "Resolving video deeplink for video with ID '#{videoID}'"
+      @youtube.videoFileURL videoID, (error, url) =>
+        if error?
+          @log.error "Failed to resolve video deeplink for video with ID '#{videoID}': #{error}"
+          res.status(400).send 'Could not reslve video URL'
+        else
+          @log.debug "Video deeplink for '#{videoID}'' is: %s", url
+          res.redirect url
