@@ -59,13 +59,13 @@ module.exports = class YouTube
     parameters = 
       part: 'id,snippet,contentDetails,statistics,topicDetails'
       id: id
-    @apiRequestCached 'channels', parameters, no, 60*60, next
+    @apiRequestCached 'channels', parameters, yes, 60*5, next
   
   channelVideos: (channelID, next) ->
     parameters = 
       part: 'contentDetails'
       id: channelID
-    @apiRequestCached 'channels', parameters, no, 60*10, (error, result) =>
+    @apiRequestCached 'channels', parameters, yes, 60*5, (error, result) =>
       return next(error) if error?
       return next(new Error("Channel not found")) unless result.items.length > 0
       channel = result.items[0]
@@ -75,13 +75,13 @@ module.exports = class YouTube
     parameters = 
       part: 'snippet'
       id: playlistID
-    @apiRequestCached 'playlists', parameters, no, 60*60, next
+    @apiRequestCached 'playlists', parameters, yes, 60*60, next
         
   playlistVideos: (playlistID, next) ->
     parameters = 
       part: 'id,snippet,status,contentDetails'
       id: playlistID
-    @apiRequestCached 'playlists', parameters, no, 60*60, (error, result) =>
+    @apiRequestCached 'playlists', parameters, no, 60*5, (error, result) =>
       return next(error) if error?
       return next(new Error("Playlist #{playlistID} of channel not found")) unless result.items.length > 0        
       playlist = result.items[0]
@@ -90,16 +90,23 @@ module.exports = class YouTube
         part: 'id,snippet,contentDetails,status'
         playlistId: playlist.id
         maxResults: 50
-      @apiRequestCached 'playlistItems', parameters, no, 60*60, next
+      @apiRequestCached 'playlistItems', parameters, yes, 60*5, next
     
   videoFileURL: (videoID, next) ->
-    cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
-    log.debug '$ %s', cmd
-    ChildProcess.exec cmd, (error, stdout, stderr) =>
-      if stderr? and stderr isnt ''
-        log.error stderr
-        next(stderr)
-      else
-        stdout = stdout.replace "\n", ""
-        log.debug 'Resolved URL = %s', stdout
-        next(null, stdout)
+    cache.cache
+      key: 'ytvideoresolve:'+videoID
+      lifetime: 60
+      allow: yes
+      fetch: (store) =>
+        cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
+        log.debug '$ %s', cmd
+        ChildProcess.exec cmd, (error, stdout, stderr) =>
+          if stderr? and stderr isnt ''
+            log.error stderr
+            next(stderr)
+          else
+            url = stdout.replace "\n", ""
+            log.debug 'Resolved URL = %s', url
+            store(url)
+      get: (url, cached) =>
+        next null, url, cached
