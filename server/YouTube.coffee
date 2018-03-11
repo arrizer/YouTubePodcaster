@@ -94,7 +94,7 @@ module.exports = class YouTube
       @apiRequestCached 'playlistItems', parameters, yes, 60*5, next
 
   preCacheVideoURLs: (videoIDs) ->
-    Async.eachLimit videoIDs, 10, (videoID, done) =>
+    Async.eachSeries videoIDs, (videoID, done) =>
       log.debug "Caching video URL for #{videoID}"
       @videoFileURL videoID, (error, url) ->
         done()
