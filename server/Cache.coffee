@@ -10,7 +10,7 @@ module.exports = class Cache
   
   constructor: (host, port) ->
     @memcached = new Memcached(host+':'+port)
-    log.info "Using memcached at %s:%s", host, port
+    log.info "Using memcached at #{host}:#{port}"
   
   cache: (arg) ->
     arg.allow = yes unless arg.allow?
@@ -22,10 +22,10 @@ module.exports = class Cache
     if arg.allow
       @memcached.get PREFIX + arg.key, (error, data) =>
         if !error? and data
-          log.debug "Cache hit for %s", arg.key
+          log.debug "Cache hit for #{arg.key}"
           arg.get(data, yes)
         else
-          log.debug "Cache miss for %s", arg.key
+          log.debug "Cache miss for #{arg.key}"
           arg.fetch (data) =>
             if data?
               @memcached.set PREFIX + arg.key, data, arg.lifetime, (error) =>

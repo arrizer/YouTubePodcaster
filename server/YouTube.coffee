@@ -14,7 +14,7 @@ module.exports = class YouTube
   constructor: (@apiKey) ->
 
   request: (url, next) ->
-    log.debug 'GET %s', url
+    log.debug "GET #{url}"
     req = HTTP.request url, (res) =>
       if res.statusCode is 200
         body = ''
@@ -24,7 +24,7 @@ module.exports = class YouTube
           next null, body
       else
         error = new Error("Google API request to #{url} failed with HTTP error #{res.statusCode}")
-        log.error '%s', error.toString()
+        log.error "#{error.toString()}"
         next error
     req.on 'error', (error) =>
       next error
@@ -108,14 +108,14 @@ module.exports = class YouTube
       allow: yes
       fetch: (store) =>
         cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
-        log.debug '$ %s', cmd
+        log.debug "$ #{cmd}"
         ChildProcess.exec cmd, (error, stdout, stderr) =>
           if stderr? and stderr isnt ''
             log.error stderr
             next(stderr)
           else
             url = stdout.replace "\n", ""
-            log.debug 'Resolved URL = %s', url
+            log.debug "Resolved URL = #{url}"
             store(url)
       get: (url, cached) =>
         next null, url, cached
