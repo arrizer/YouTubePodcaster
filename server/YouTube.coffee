@@ -1,6 +1,7 @@
 HTTP      = require 'https'
 Log       = require('appkit').Log
 URL       = require 'url'
+Async     = require 'async'
 Cache     = require './Cache'
 ChildProcess = require 'child_process'
 
@@ -91,11 +92,19 @@ module.exports = class YouTube
         playlistId: playlist.id
         maxResults: 50
       @apiRequestCached 'playlistItems', parameters, yes, 60*5, next
+
+  preCacheVideoURLs: (videoIDs) ->
+    Async.eachLimit videoIDs, 10, (videoID, done) =>
+      log.debug "Caching video URL for #{videoID}"
+      @videoFileURL videoID, (error, url) ->
+        done()
+    , ->
+      log.debug "Finished caching"
     
   videoFileURL: (videoID, next) ->
     cache.cache
       key: 'ytvideoresolve:'+videoID
-      lifetime: 60
+      lifetime: (5 * 60 * 60)
       allow: yes
       fetch: (store) =>
         cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'

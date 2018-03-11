@@ -39,9 +39,11 @@ module.exports = class Feeds extends AppKit.MountedServerModule
               @log.error "Failed to fetch channel videos for channel #{channelID}: #{error}"
               res.status(500).send error
             else
+              videoURLs = []
               count = 0
               @log.info "Responding with #{videos.items.length} videos in channel #{channelID}"
               for video in videos.items
+                videoURLs.push(video.snippet.resourceId.videoId)
                 feed.item
                   title: video.snippet.title
                   description: video.snippet.description
@@ -51,6 +53,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                   enclosure:
                     url: @server.config.domain + 'video/' + video.snippet.resourceId.videoId + '.mp4'
                     mime: 'video/mp4'
+              @youtube.preCacheVideoURLs(videoURLs)
               res.type 'application/rss+xml; charset=utf-8'
               res.send feed.xml('  ')
     
@@ -91,9 +94,11 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                 if error?
                   res.status(500).send error
                 else
+                  videoURLs = []
                   count = 0
                   @log.info "Responding with #{videos.items.length} videos in playlist with id '#{playlistID}'..."
                   for video in videos.items
+                    videoURLs.push(video.snippet.resourceId.videoId)
                     feed.item
                       title: video.snippet.title
                       description: video.snippet.description
@@ -103,6 +108,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                       enclosure:
                         url: @server.config.domain + 'video/' + video.snippet.resourceId.videoId + '.mp4'
                         mime: 'video/mp4'
+                  @youtube.preCacheVideoURLs(videoURLs)
                   res.type 'application/rss+xml; charset=utf-8'
                   res.send feed.xml('  ')
                 
