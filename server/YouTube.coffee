@@ -107,7 +107,7 @@ module.exports = class YouTube
       lifetime: (5 * 60 * 60)
       allow: yes
       fetch: (store) =>
-        cmd = 'youtube-dl -g -f best "http://youtube.com/watch?v='+videoID+'"'
+        cmd = 'youtube-dl --no-warnings -g -f best "http://youtube.com/watch?v='+videoID+'"'
         log.debug "$ #{cmd}"
         ChildProcess.exec cmd, (error, stdout, stderr) =>
           if stderr? and stderr isnt ''
