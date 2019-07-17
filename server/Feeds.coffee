@@ -53,7 +53,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                   enclosure:
                     url: @server.config.domain + 'video/' + video.snippet.resourceId.videoId + '.mp4'
                     mime: 'video/mp4'
-              @youtube.preCacheVideoURLs(videoURLs)
+              #@youtube.preCacheVideoURLs(videoURLs)
               res.type 'application/rss+xml; charset=utf-8'
               res.send feed.xml('  ')
     
@@ -108,7 +108,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                       enclosure:
                         url: @server.config.domain + 'video/' + video.snippet.resourceId.videoId + '.mp4'
                         mime: 'video/mp4'
-                  @youtube.preCacheVideoURLs(videoURLs)
+                  #@youtube.preCacheVideoURLs(videoURLs)
                   res.type 'application/rss+xml; charset=utf-8'
                   res.send feed.xml('  ')
                 
