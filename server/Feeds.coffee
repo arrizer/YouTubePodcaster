@@ -118,7 +118,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
       @youtube.videoFileURL videoID, (error, url) =>
         if error?
           @log.error "Failed to resolve video deeplink for video with ID '#{videoID}': #{error}"
-          res.status(400).send 'Could not reslve video URL'
+          res.status(400).send "Could not resolve video URL for #{videoID}: #{error}"
         else
           @log.debug "Video deeplink for '#{videoID}' is: #{url}"
           res.redirect url
