@@ -80,7 +80,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
             else
               channel = channel.items[0].snippet
               feed = new Podcast
-                title: channel.title + ': ' + playlist.title
+                title: channel.title + ' - ' + playlist.title
                 description: playlist.description
                 image_url: channel.thumbnails.high.url
                 feed_url: @server.config.domain + req.url
