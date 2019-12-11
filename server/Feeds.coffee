@@ -5,8 +5,8 @@ Podcast = require 'podcast'
 Async   = require 'async'
 
 module.exports = class Feeds extends AppKit.MountedServerModule
-  constructor: ->
-    super
+  constructor: (server) ->
+    super(server)
     @youtube = new YouTube(@server.config.google_api_key)
     @cache = Cache.Local()
   
