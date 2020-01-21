@@ -25,7 +25,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
           channel = channel.items[0].snippet
           feed = new Podcast
             title: channel.title
-            description: channel.description
+            description: channel.description or "no description"
             image_url: channel.thumbnails.high.url
             feed_url: @server.config.domain + req.url
             site_url: @server.config.domain
@@ -46,7 +46,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                 videoURLs.push(video.snippet.resourceId.videoId)
                 feed.item
                   title: video.snippet.title
-                  description: video.snippet.description
+                  description: video.snippet.description or "no description"
                   url: 'https://@youtube.com/watch?v='+video.snippet.resourceId.videoId
                   guid: video.id
                   date: video.snippet.publishedAt
@@ -81,7 +81,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
               channel = channel.items[0].snippet
               feed = new Podcast
                 title: channel.title + ' - ' + playlist.title
-                description: playlist.description
+                description: playlist.description or "no description"
                 image_url: channel.thumbnails.high.url
                 feed_url: @server.config.domain + req.url
                 site_url: @server.config.domain
@@ -101,7 +101,7 @@ module.exports = class Feeds extends AppKit.MountedServerModule
                     videoURLs.push(video.snippet.resourceId.videoId)
                     feed.item
                       title: video.snippet.title
-                      description: video.snippet.description
+                      description: video.snippet.description or "no description"
                       url: 'https://@youtube.com/watch?v='+video.snippet.resourceId.videoId
                       guid: video.id
                       date: video.snippet.publishedAt
